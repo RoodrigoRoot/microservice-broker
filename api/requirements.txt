@@ -1,0 +1,4 @@
+django==3.2
+psycopg2==2.8.0
+djangorestframework==3.13.1
+pika==1.2.0
