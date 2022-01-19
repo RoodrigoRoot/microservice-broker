@@ -1,0 +1,50 @@
+version: '3'
+
+services:
+
+  api:
+    container_name: "api"
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    command: sh -c "python3 manage.py migrate &&
+                    python3 manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./api/:/app
+    ports:
+      - "8000:8000"
+    networks:
+        - rabbitmq_net
+    restart: always
+
+  notify:
+        container_name: "notify"
+        build:
+          context: .
+          dockerfile: notify/Dockerfile
+        command: sh -c "uvicorn main:app --reload --host 0.0.0.0 --port 80"
+        volumes:
+          - ./notify/:/notify
+        ports:
+          - "80:80"
+        networks:
+          - rabbitmq_net
+        restart: always
+
+  broker:
+      image: rabbitmq:3-management-alpine
+      container_name: "broker"
+      ports:
+          - 5672:5672
+          - 15672:15672
+      volumes:
+          - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+          - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+      networks:
+          - rabbitmq_net
+
+networks:
+    rabbitmq_net:
+      driver: bridge
+
+
