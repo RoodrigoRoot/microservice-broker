@@ -22,4 +22,4 @@ def publish(body: dict):
         print('Message could not be confirmed')
 
 
-connection.close()
+
