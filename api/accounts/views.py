@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 from accounts.serializers import UserSerializer
-from producer import publish
+from producer import RabbitMQBroker
 # Create your views here.
 
 
@@ -18,5 +18,5 @@ class CreateGetUsersAPIView(APIView):
     def post(self, request):
         serializer = UserSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        publish(serializer.data)
+        RabbitMQBroker().publish(serializer.data)
         return Response({"ok": "ok"})
